@@ -9,6 +9,14 @@ const smallToLargeMap = {
     'ャ': 'ヤ', 'ュ': 'ユ', 'ョ': 'ヨ', 'ッ': 'ツ'
 };
 
+// 濁点と半濁点のマップ
+const voicedSounds = {
+    'か': ['が'], 'き': ['ぎ'], 'く': ['ぐ'], 'け': ['げ'], 'こ': ['ご'],
+    'さ': ['ざ'], 'し': ['じ'], 'す': ['ず'], 'せ': ['ぜ'], 'そ': ['ぞ'],
+    'た': ['だ'], 'ち': ['ぢ'], 'つ': ['づ'], 'て': ['で'], 'と': ['ど'],
+    'は': ['ば', 'ぱ'], 'ひ': ['び', 'ぴ'], 'ふ': ['ぶ'], 'へ': ['べ'], 'ほ': ['ぼ', 'ぽ']
+};
+
 window.onload = function() {
     // poke.txtを読み込んでavailableWordsに格納
     fetch('poke.txt')
@@ -32,7 +40,7 @@ document.getElementById('submitBtn').addEventListener('click', function() {
 
 // ユーザーの入力を処理
 function handleUserInput(userWord) {
-    userWord = normalizeWord(userWord);  // 小文字や「ー」の正規化
+    userWord = normalizeWord(userWord); // 小文字や「ー」の正規化
     const lastChar = usedWords.length > 0 ? getLastChar(usedWords[usedWords.length - 1]) : null;
 
     // 同じ単語を使わない
@@ -42,7 +50,7 @@ function handleUserInput(userWord) {
     }
 
     // 前の単語の最後の文字に一致しているか確認
-    if (lastChar && userWord[0] !== lastChar) {
+    if (lastChar && !isValidStart(userWord, lastChar)) {
         alert('前の単語と一致しません！');
         return;
     }
@@ -81,7 +89,7 @@ function handleUserInput(userWord) {
 // ボットの応答を取得 (「ん」で終わる単語を除外)
 function getBotResponse(userWord) {
     const lastChar = getLastChar(userWord);
-    const candidates = availableWords.filter(word => word[0] === lastChar && !usedWords.includes(word) && word.slice(-1) !== 'ん');
+    const candidates = availableWords.filter(word => isValidStart(word, lastChar) && !usedWords.includes(word) && word.slice(-1) !== 'ん');
     if (candidates.length > 0) {
         return candidates[Math.floor(Math.random() * candidates.length)];
     }
@@ -91,12 +99,22 @@ function getBotResponse(userWord) {
 // 単語の最後の文字を取得（「ー」の場合は前の文字）
 function getLastChar(word) {
     const lastChar = word.slice(-1);
-    return smallToLargeMap[lastChar] || (lastChar === 'ー' ? word.slice(-2, -1) : lastChar);
+    return lastChar === 'ー' ? word.slice(-2, -1) : lastChar;
 }
 
 // 小文字や「ー」を大文字に正規化
 function normalizeWord(word) {
     return word.split('').map(char => smallToLargeMap[char] || char).join('');
+}
+
+// 前の単語の最後の文字と現在の単語の最初の文字が有効かどうかチェック
+function isValidStart(userWord, lastChar) {
+    // 濁点や半濁点に対応
+    if (voicedSounds[lastChar]) {
+        // ボットの単語の最初の文字が最後の文字の濁点/半濁点の候補に含まれるかをチェック
+        return voicedSounds[lastChar].some(sound => userWord[0] === sound);
+    }
+    return userWord[0] === lastChar;
 }
 
 // しりとり履歴に単語を追加
