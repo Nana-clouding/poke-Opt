@@ -1,4 +1,4 @@
-body body {
+body {
     font-family: 'Arial', sans-serif;
     background-color: #f0f8ff;
     color: #333;
@@ -27,10 +27,18 @@ button {
     background-color: #4CAF50;
     color: white;
     cursor: pointer;
+    margin-right: 5px;
 }
 
 button:hover {
     background-color: #45a049;
+}
+
+#result {
+    font-size: 24px;
+    font-weight: bold;
+    color: red;
+    margin-top: 20px;
 }
 
 .user {
