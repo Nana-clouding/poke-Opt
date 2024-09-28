@@ -62,8 +62,8 @@ function handleUserInput(userWord) {
     }
 
     // 末尾が「ん」の単語は負け
-    if (userWord.slice(-1) === 'ん') {
-        alert('「ん」で終わる単語は使えません！');
+    if (userWord.slice(-1) === 'ン') {
+        alert('「ン」で終わる単語は使えません！');
         return;
     }
 
@@ -89,7 +89,7 @@ function handleUserInput(userWord) {
 // ボットの応答を取得 (「ん」で終わる単語を除外)
 function getBotResponse(userWord) {
     const lastChar = getLastChar(userWord);
-    const candidates = availableWords.filter(word => isValidStart(word, lastChar) && !usedWords.includes(word) && word.slice(-1) !== 'ん');
+    const candidates = availableWords.filter(word => isValidStart(word, lastChar) && !usedWords.includes(word) && word.slice(-1) !== 'ン');
     if (candidates.length > 0) {
         return candidates[Math.floor(Math.random() * candidates.length)];
     }
