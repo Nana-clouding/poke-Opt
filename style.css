@@ -1,4 +1,4 @@
-body {
+body body {
     font-family: 'Arial', sans-serif;
     background-color: #f0f8ff;
     color: #333;
@@ -31,4 +31,14 @@ button {
 
 button:hover {
     background-color: #45a049;
+}
+
+.user {
+    text-align: left;
+    color: blue;
+}
+
+.bot {
+    text-align: right;
+    color: green;
 }
