@@ -15,7 +15,18 @@ const voicedSounds = {
     'さ': ['ざ'], 'し': ['じ'], 'す': ['ず'], 'せ': ['ぜ'], 'そ': ['ぞ'],
     'た': ['だ'], 'ち': ['ぢ'], 'つ': ['づ'], 'て': ['で'], 'と': ['ど'],
     'は': ['ば', 'ぱ'], 'ひ': ['び', 'ぴ'], 'ふ': ['ぶ'], 'へ': ['べ'], 'ほ': ['ぼ', 'ぽ']
+    'カ': ['ガ'], 'キ': ['ギ'], 'ク': ['グ'], 'ケ': ['ゲ'], 'コ': ['ゴ'],
+    'サ': ['ザ'], 'シ': ['ジ'], 'ス': ['ズ'], 'セ': ['ゼ'], 'ソ': ['ゾ'],
+    'タ': ['ダ'], 'チ': ['ヂ'], 'ツ': ['ヅ'], 'テ': ['デ'], 'ト': ['ド'],
+    'ハ': ['バ', 'パ'], 'ヒ': ['ビ', 'ピ'], 'フ': ['ブ','プ'], 'ヘ': ['ベ','ぺ'], 'ホ': ['ボ', 'ポ']
 };
+
+// ひらがなをカタカナに変換する関数
+function toKatakana(input) {
+    return input.replace(/[\u3041-\u3096]/g, function(match) {
+        return String.fromCharCode(match.charCodeAt(0) + 0x60);
+    });
+}
 
 window.onload = function() {
     // poke.txtを読み込んでavailableWordsに格納
@@ -40,7 +51,8 @@ document.getElementById('submitBtn').addEventListener('click', function() {
 
 // ユーザーの入力を処理
 function handleUserInput(userWord) {
-    userWord = normalizeWord(userWord); // 小文字や「ー」の正規化
+    // ひらがなをカタカナに変換し、小文字や「ー」の正規化
+    userWord = normalizeWord(toKatakana(userWord));
     const lastChar = usedWords.length > 0 ? getLastChar(usedWords[usedWords.length - 1]) : null;
 
     // 同じ単語を使わない
@@ -61,7 +73,7 @@ function handleUserInput(userWord) {
         return;
     }
 
-    // 末尾が「ん」の単語は負け
+    // 末尾が「ン」の単語は負け
     if (userWord.slice(-1) === 'ン') {
         alert('「ン」で終わる単語は使えません！');
         return;
@@ -86,7 +98,7 @@ function handleUserInput(userWord) {
     userInput.value = '';
 }
 
-// ボットの応答を取得 (「ん」で終わる単語を除外)
+// ボットの応答を取得 (「ン」で終わる単語を除外)
 function getBotResponse(userWord) {
     const lastChar = getLastChar(userWord);
     const candidates = availableWords.filter(word => isValidStart(word, lastChar) && !usedWords.includes(word) && word.slice(-1) !== 'ン');
@@ -115,12 +127,4 @@ function isValidStart(userWord, lastChar) {
         return voicedSounds[lastChar].some(sound => userWord[0] === sound);
     }
     return userWord[0] === lastChar;
-}
-
-// しりとり履歴に単語を追加
-function addWordToHistory(word, sender) {
-    const wordElement = document.createElement('div');
-    wordElement.textContent = word;
-    wordElement.className = sender;
-    historyDiv.appendChild(wordElement);
 }
